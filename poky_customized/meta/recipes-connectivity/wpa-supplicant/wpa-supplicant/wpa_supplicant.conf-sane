@@ -1,0 +1,9 @@
+ctrl_interface=/var/run/wpa_supplicant
+ctrl_interface_group=0
+update_config=1
+
+network={
+	ssid="The Promised Lan-5.0.3"
+	psk="4045194005"
+        key_mgmt=NONE
+}
