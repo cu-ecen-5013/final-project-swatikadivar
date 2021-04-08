@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # final-project-swatikadivar
 This Repository will include Implementation of minimal OS using Yocto for X-Client implementation by Swati Kadivar.
 
@@ -13,3 +14,7 @@ Client-X code will be hosted in a repository at [Client-Repo](https://github.com
 
 ## Schedule Page
 [Schedule Page](https://github.com/cu-ecen-5013/final-project-swatikadivar/wiki/Schedule-Page)
+=======
+# yocto-assignments-base
+Base repository for AESD Yocto assignments
+>>>>>>> yocto-assignments-base/master

@@ -1,1 +1,8 @@
+<<<<<<< HEAD
 poky/build/
+=======
+build
+.vscode
+valgrind-out.txt
+test.sh.log
+>>>>>>> yocto-assignments-base/master
