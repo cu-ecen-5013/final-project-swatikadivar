@@ -130,6 +130,9 @@ layer_metaoe_info=$?
 bitbake-layers show-layers | grep "meta-networking" > /dev/null
 layer_networking_info=$?
 
+bitbake-layers show-layers | grep "meta-socketserver" > /dev/null
+layer_socketserver_info=$?
+
 if [ $layer_metaoe_info -ne 0 ];then
     echo "Adding meta-oe layer"
 	bitbake-layers add-layer ../meta-openembedded/meta-oe
@@ -161,6 +164,12 @@ else
 	echo "layer meta-raspberrypi already exists"
 fi
 
+if [ $layer_info -ne 0 ];then
+	echo "Adding meta-socketserver layer"
+	bitbake-layers add-layer ../meta-socketserver
+else
+	echo "layer meta-socketserver already exists"
+fi
 
 
 set -e
