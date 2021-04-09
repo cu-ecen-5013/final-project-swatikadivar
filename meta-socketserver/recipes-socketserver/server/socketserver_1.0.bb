@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 SRC_URI = "git://github.com/cu-ecen-5013/final-project-swatikadivar.git;protocol=http"
 PV = "1.0+git${SRCPV}"
-SRCREV = "b9a5e45e4827c74ea9579ec638d42c1bc362208a"
+SRCREV = "6db161d55b35224a1219c92d212c56197e76b290"
 
 #FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
@@ -28,9 +28,9 @@ do_configure () {
 	:
 }
 
-do_compile () {
-	oe_runmake
-}
+#do_compile () {
+#	oe_runmake
+#}
 
 do_install () {
 	# TODO: Install your binaries/scripts here.
