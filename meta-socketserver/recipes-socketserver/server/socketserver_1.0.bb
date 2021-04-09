@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=3da9cfbcb788c80a0384361
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
-SRCREV = "cc74ecf3ac298dce7901c0d4af5ae6a05a32b7b5"
+SRCREV = "17d191172fa1be585be83948cfab7e680f273a08"
 SRC_URI = "https://github.com/cu-ecen-5013/final-project-swatikadivar/tree/master/socketserver"
 
 S = "${WORKDIR}/git"
