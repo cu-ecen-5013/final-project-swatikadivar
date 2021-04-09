@@ -4,11 +4,11 @@
 #
 
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=3da9cfbcb788c80a0384361b4de20420"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-SRC_URI = "git@github.com:cu-ecen-5013/final-project-swatikadivar.git;protocol=ssh;branch=main"
+SRC_URI = "git://github.com/cu-ecen-5013/final-project-swatikadivar.git;protocol=http"
 PV = "1.0+git${SRCPV}"
-SRCREV = "073af05f0b259ee219c228cb05bc90d0f958dd47"
+SRCREV = "b9a5e45e4827c74ea9579ec638d42c1bc362208a"
 
 #FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
@@ -43,8 +43,8 @@ do_install () {
 
 	install -d ${D}${bindir}
 	install -m 0755 ${S}/socketserver ${D}${bindir}/	
-	install -d ${D}${sysconfdir}/init.d
-	install -m 0755 ${S}/socketserver-start-stop ${D}${sysconfdir}/init.d
+#	install -d ${D}${sysconfdir}/init.d
+#	install -m 0755 ${S}/socketserver-start-stop ${D}${sysconfdir}/init.d
 }
 
 
