@@ -3,22 +3,18 @@
 # Yocto Project Development Manual.
 #
 
-DESCRIPTION = "Socket server application for Yocto build."
-SECTION = "socketserver"
-DEPENDS = ""
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
+SRC_URI = "git@github.com:cu-ecen-5013/final-project-swatikadivar.git;protocol=ssh;branch=main"
 PV = "1.0+git${SRCPV}"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
+SRCREV = "073af05f0b259ee219c228cb05bc90d0f958dd47"
 
-SRCREV = "c6f27b4e1ae55c3002c620fd52a796d6c3abb18e"
-SRC_URI = "https://github.com/cu-ecen-5013/final-project-swatikadivar/tree/master/socketserver"
+#FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
 S = "${WORKDIR}/git"
 
 #inherit autotools
-
 
 FILES_${PN} += "${bindir}/socketserver"
 # TODO: customize these as necessary for any libraries you need for your application
