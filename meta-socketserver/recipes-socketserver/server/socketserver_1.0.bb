@@ -9,9 +9,10 @@ DEPENDS = ""
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
+PV = "1.0+git${SRCPV}"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
-SRCREV = "17d191172fa1be585be83948cfab7e680f273a08"
+SRCREV = "c6f27b4e1ae55c3002c620fd52a796d6c3abb18e"
 SRC_URI = "https://github.com/cu-ecen-5013/final-project-swatikadivar/tree/master/socketserver"
 
 S = "${WORKDIR}/git"
