@@ -32,13 +32,13 @@ char s[INET6_ADDRSTRLEN];
 int operation_switch =1;
 
 
-void delay(int number_of_seconds)
+/*void delay(int number_of_seconds)
 {
     int milli_seconds = 1000 * number_of_seconds;	// Converting time into milli_seconds
-    clock_t start_time = clock();			// Storing start time
-    while (clock() < start_time + milli_seconds)	// looping till required time is not achieved
-        ;
-}
+    static clock_t start_time = clock();			// Storing start time
+    	// looping till required time is not achieved
+	return start_time;
+}*/
 
 //Signal HAndler function
 void handle_sig(int sig)
@@ -149,6 +149,16 @@ int main(int argc, char *argv[])
 	inet_ntop(opp_addr.ss_family, get_in_addr((struct sockaddr *)&opp_addr),
                   s, sizeof s);
 	
+
+
+
+	time_t r_time;
+	struct tm *timeinfo;
+	char buf[30];
+
+	time(&r_time);
+
+
 	while(1)
 	{
 		  printf("index %d\n", i++);
@@ -158,16 +168,21 @@ int main(int argc, char *argv[])
 		syslog(LOG_INFO, "Accepted connection from %s\n", s);
 		
 		int k=0;
-		char rdBuff[20] = {'\0'};
+		char rdBuff[80] = {'\0'};
+
 		k = rand()%70;
-		sprintf(rdBuff,"%d\n",k);
+		
+		timeinfo = localtime(&r_time);
+		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
+		
+		sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
 		printf("%d %s\n",k,rdBuff);
 		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
 		if( rc < 0){
 		  perror("Couldnt send sensor results to file\n");
 		}
 	
-		usleep(500);
+		usleep(5000);
 	}
  }
 }
