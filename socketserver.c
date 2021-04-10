@@ -85,20 +85,30 @@ int main(int argc, char *argv[])
   }
 
 	  /// socket and bind
-	for(p = res; p != NULL; p = p->ai_next)
-	{
+	for(p = res; p != NULL; p = p->ai_next){
 	
-	  if((sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
-	  {
+		if((sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
+		{
 			perror("Socket failed");
-	  }
-	
-	  if(bind(sockfd, res->ai_addr, res->ai_addrlen) < 0)
-	  {
+		}
+
+/*		void *addr;
+		char ipstr[16];
+								// get the pointer to the address itself,
+								// different fields in IPv4 and IPv6:
+		if (res->ai_family == AF_INET) {
+			struct sockaddr_in *ipv4 = (struct sockaddr_in *)res->ai_addr;
+			addr = &(ipv4->sin_addr);
+		
+			inet_ntop(res->ai_family, addr, ipstr, sizeof ipstr);	// convert the IP to a string and print it:
+			printf("server ip = %s\n",ipstr);
+		}
+*/
+		if(bind(sockfd, res->ai_addr, res->ai_addrlen) < 0)
+		{
 			perror("bind failed");
-	  }
-	
-	  break;
+		}	
+		break;
 	}
 	
 	if(p == NULL)
@@ -109,14 +119,6 @@ int main(int argc, char *argv[])
 	
 	freeaddrinfo(res);
 
-//int opt;
-//
-///// start daemon if -d given in argument
-//if((opt = getopt(argc, argv, "d")) == 'd')
-//{
-//	daemon(0, sockfd);
-//}
-
 
 	/// socket listen
 	if(listen(sockfd, BACKLOG) < 0)
@@ -125,7 +127,7 @@ int main(int argc, char *argv[])
 	  return -1;
 	}
   
-int i = 0;
+	int i = 0;
 
   while(operation_switch)
   {
@@ -157,12 +159,10 @@ int i = 0;
 		
 		int k=0;
 		char rdBuff[20] = {'\0'};
-		for(int i=0;i<10;i++){
-			delay(1000);
-			k = rand()%70;
-			strcpy(rdBuff,(char *)&k);
-			rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
-		}
+		k = rand()%70;
+		sprintf(rdBuff,"%s",k);
+		strcat(rdBuff,'\n');
+		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
 		if( rc < 0){
 		  perror("Couldnt send sensor results to file\n");
 		}

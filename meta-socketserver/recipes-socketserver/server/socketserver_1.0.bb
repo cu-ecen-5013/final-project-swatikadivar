@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 SRC_URI = "git://github.com/cu-ecen-5013/final-project-swatikadivar.git;protocol=http"
 PV = "1.0+git${SRCPV}"
-SRCREV = "690c81c9f9c38f47969f89f3c8c3cae9aef1b7e2"
+SRCREV = "aec59f57400e5d48cc4575f04821d1ae29378995"
 
 #FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
@@ -19,9 +19,9 @@ S = "${WORKDIR}/git"
 FILES_${PN} += "${bindir}/socketserver"
 # TODO: customize these as necessary for any libraries you need for your application
 TARGET_LDFLAGS += "-pthread -lrt"
-inherit update-rc.d
-INITSCRIPT_PACKAGES= "${PN}"
-INITSCRIPT_NAME_${PN}="socketserver-start-stop"
+#inherit update-rc.d
+#INITSCRIPT_PACKAGES= "${PN}"
+#INITSCRIPT_NAME_${PN}="socketserver-start-stop"
 
 
 do_configure () {
@@ -43,8 +43,8 @@ do_install () {
 
 	install -d ${D}${bindir}
 	install -m 0755 ${S}/socketserver ${D}${bindir}/	
-	install -d ${D}${sysconfdir}/init.d
-	install -m 0755 ${S}/socketserver-start-stop ${D}${sysconfdir}/init.d
+#	install -d ${D}${sysconfdir}/init.d
+#	install -m 0755 ${S}/socketserver-start-stop ${D}${sysconfdir}/init.d
 }
 
 
