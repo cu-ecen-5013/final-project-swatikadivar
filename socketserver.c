@@ -30,7 +30,8 @@
 int sockfd, newfd;
 char s[INET6_ADDRSTRLEN];
 int operation_switch =1;
-pthread_mutex_t *socklock;
+pthread_mutex_t socklock;
+char rdBuff[80] = {'\0'};
 
 //Signal HAndler function
 void handle_sig(int sig)
@@ -51,13 +52,13 @@ typedef struct
 
 void* threadhandler1(void* thread_param)
 {
+//	printf("entering thread handler 1\n");
 	while(operation_switch)
 	{
 		/// LOG MSG TO SYSLOG: "Accepted connection from XXX"
 		syslog(LOG_INFO, "Accepted connection from %s\n", s);
 		
 		int k=0, rc=0;
-		char rdBuff[80] = {'\0'};
 
 		time_t r_time;
 		struct tm *timeinfo;
@@ -68,27 +69,29 @@ void* threadhandler1(void* thread_param)
 		
 		timeinfo = localtime(&r_time);
 		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
-		
+	pthread_mutex_lock(&socklock);	
 		sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
-		printf("%d %s\n",k,rdBuff);
+		//printf("%d %s\n",k,rdBuff);
 		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
+	pthread_mutex_unlock(&socklock);
 		if( rc < 0){
 		  perror("Couldnt send sensor results to file\n");
 		}
 	
-		usleep(50000);
+		sleep(1);
 	}
 	pthread_exit((void *)0);
 }
 
 void* threadhandler2(void* thread_param)
 {
+//	printf("entering thread handler 2\n");
 	while(operation_switch){
 			/// LOG MSG TO SYSLOG: "Accepted connection from XXX"
 		syslog(LOG_INFO, "Accepted connection from %s\n", s);
 		
 		int k=0,rc=0;
-		char rdBuff[80] = {'\0'};
+		
 
 		time_t r_time;
 		struct tm *timeinfo;
@@ -100,15 +103,18 @@ void* threadhandler2(void* thread_param)
 		timeinfo = localtime(&r_time);
 		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
 		
-		sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
-		printf("%d %s\n",k,rdBuff);
+	pthread_mutex_lock(&socklock);	
+		sprintf(rdBuff, "%s sensor 2: %d\n",buf, k);
+		//printf("%d %s\n",k,rdBuff);
 		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
+	pthread_mutex_unlock(&socklock);
 		if( rc < 0){
 		  perror("Couldnt send sensor results to file\n");
 		}
 	
-		usleep(50000);
+		sleep(1);
 	}
+//	printf("exiting pthread 2\n");
 	pthread_exit((void *)0);
 }
 
@@ -130,9 +136,9 @@ int main(int argc, char *argv[])
   signal(SIGTERM,handle_sig);
   signal(SIGINT,handle_sig);
 
-  if(pthread_mutex_init(socklock, NULL) != 0)
+  if(pthread_mutex_init(&socklock, NULL) != 0)
   {
-	  syslog(LOG_ERR, "mutex init failed.");
+	  printf("mutex init failed.\n");
 	  return -1; 
   }
 	  
