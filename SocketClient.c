@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   ref.ai_socktype = SOCK_STREAM;
 //  ref.ai_flags = AI_PASSIVE;
 
-  if(getaddrinfo("192.168.137.143", PORT, &ref, &res) != 0)
+  if(getaddrinfo("192.168.137.111", PORT, &ref, &res) != 0)
   {
     syslog(LOG_ERR, "getaddrinfo failed.");
     return -1;

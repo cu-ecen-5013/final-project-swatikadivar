@@ -44,9 +44,10 @@ void handle_sig(int sig)
   _exit(0);
 }
 
-
-
-
+typedef struct
+{
+    int threadIdx;
+} threadParams_t;
 
 void* threadhandler1(void* thread_param)
 {
@@ -75,9 +76,9 @@ void* threadhandler1(void* thread_param)
 		  perror("Couldnt send sensor results to file\n");
 		}
 	
-		usleep(5000);
+		usleep(50000);
 	}
-	return NULL;
+	pthread_exit((void *)0);
 }
 
 void* threadhandler2(void* thread_param)
@@ -106,9 +107,9 @@ void* threadhandler2(void* thread_param)
 		  perror("Couldnt send sensor results to file\n");
 		}
 	
-		usleep(5000);
+		usleep(50000);
 	}
-	return NULL;
+	pthread_exit((void *)0);
 }
 
 // This routine returns client socket address
@@ -124,6 +125,8 @@ void *get_in_addr(struct sockaddr *sa)
   
 int main(int argc, char *argv[])
 {
+	
+  threadParams_t threadParams[2];
   signal(SIGTERM,handle_sig);
   signal(SIGINT,handle_sig);
 
@@ -171,15 +174,6 @@ int main(int argc, char *argv[])
 	
 	freeaddrinfo(res);
 
-//int opt;
-//
-///// start daemon if -d given in argument
-//if((opt = getopt(argc, argv, "d")) == 'd')
-//{
-//	daemon(0, sockfd);
-//}
-
-
 	/// socket listen
 	if(listen(sockfd, BACKLOG) < 0)
 	{
@@ -210,18 +204,21 @@ int main(int argc, char *argv[])
 	inet_ntop(opp_addr.ss_family, get_in_addr((struct sockaddr *)&opp_addr),
                   s, sizeof s);
 	
-  
+    threadParams[0].threadIdx = 1;
+	threadParams[1].threadIdx = 2;
 	
 	/// create pthread and pass socket id, and global mutex in thread arguments
-	if((pthread_create(&thread1, NULL, &threadhandler1, NULL)) != 0)
+	if((pthread_create(&thread1, NULL, &threadhandler1, (void *)&(threadParams[0]))) != 0)
 	{
+		printf("thread1 creation failed\n");
 	  syslog(LOG_ERR, "pthread create failed.");
 	  return -1;
 	}
 	
 	/// create pthread and pass socket id, and global mutex in thread arguments
-	if((pthread_create(&thread2, NULL, &threadhandler2, NULL)) != 0)
+	if((pthread_create(&thread2, NULL, &threadhandler2, (void *)&(threadParams[1]))) != 0)
 	{
+		printf("thread2 creation failed\n");
 	  syslog(LOG_ERR, "pthread create failed.");
 	  return -1;
 	}	
