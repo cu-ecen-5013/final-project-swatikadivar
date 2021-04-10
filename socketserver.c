@@ -1,26 +1,26 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>			// To use time library of C
-  
-
-
-
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <stdbool.h>
-#include <math.h>
-#include <arpa/inet.h>
-#include <errno.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<errno.h>
+#include<linux/fs.h>
+#include<fcntl.h>
+#include<unistd.h>
+#include<signal.h>
+#include<libgen.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+#include<string.h>
+#include<netdb.h>
 #include<syslog.h>
-#include <signal.h>
-#include <stdint.h>
+#include<pthread.h>
+#include<sys/queue.h>
+#include<sys/time.h>
+#include<time.h>
+#include<stdbool.h>
 
 #define MAXRECVSTRING 30
 #define PORTNO 9000
@@ -30,15 +30,7 @@
 int sockfd, newfd;
 char s[INET6_ADDRSTRLEN];
 int operation_switch =1;
-
-
-/*void delay(int number_of_seconds)
-{
-    int milli_seconds = 1000 * number_of_seconds;	// Converting time into milli_seconds
-    static clock_t start_time = clock();			// Storing start time
-    	// looping till required time is not achieved
-	return start_time;
-}*/
+pthread_mutex_t *socklock;
 
 //Signal HAndler function
 void handle_sig(int sig)
@@ -50,6 +42,73 @@ void handle_sig(int sig)
     syslog(LOG_DEBUG,"Caught SIGTERM Signal exiting\n");  
   shutdown(newfd,SHUT_RDWR);
   _exit(0);
+}
+
+
+
+
+
+void* threadhandler1(void* thread_param)
+{
+	while(operation_switch)
+	{
+		/// LOG MSG TO SYSLOG: "Accepted connection from XXX"
+		syslog(LOG_INFO, "Accepted connection from %s\n", s);
+		
+		int k=0, rc=0;
+		char rdBuff[80] = {'\0'};
+
+		time_t r_time;
+		struct tm *timeinfo;
+		char buf[30];
+		time(&r_time);
+
+		k = rand()%70;
+		
+		timeinfo = localtime(&r_time);
+		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
+		
+		sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
+		printf("%d %s\n",k,rdBuff);
+		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
+		if( rc < 0){
+		  perror("Couldnt send sensor results to file\n");
+		}
+	
+		usleep(5000);
+	}
+	return NULL;
+}
+
+void* threadhandler2(void* thread_param)
+{
+	while(operation_switch){
+			/// LOG MSG TO SYSLOG: "Accepted connection from XXX"
+		syslog(LOG_INFO, "Accepted connection from %s\n", s);
+		
+		int k=0,rc=0;
+		char rdBuff[80] = {'\0'};
+
+		time_t r_time;
+		struct tm *timeinfo;
+		char buf[30];
+		time(&r_time);
+
+		k = rand()%70;
+		
+		timeinfo = localtime(&r_time);
+		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
+		
+		sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
+		printf("%d %s\n",k,rdBuff);
+		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
+		if( rc < 0){
+		  perror("Couldnt send sensor results to file\n");
+		}
+	
+		usleep(5000);
+	}
+	return NULL;
 }
 
 // This routine returns client socket address
@@ -68,12 +127,15 @@ int main(int argc, char *argv[])
   signal(SIGTERM,handle_sig);
   signal(SIGINT,handle_sig);
 
+  if(pthread_mutex_init(socklock, NULL) != 0)
+  {
+	  syslog(LOG_ERR, "mutex init failed.");
+	  return -1; 
+  }
+	  
   struct sockaddr_storage opp_addr;
   struct addrinfo ref, *res, *p;
   memset(&ref, 0, sizeof(ref));
-
-  int rc=0;
-
   ref.ai_family = AF_UNSPEC;
   ref.ai_socktype = SOCK_STREAM;
   ref.ai_flags = AI_PASSIVE;
@@ -85,30 +147,20 @@ int main(int argc, char *argv[])
   }
 
 	  /// socket and bind
-	for(p = res; p != NULL; p = p->ai_next){
+	for(p = res; p != NULL; p = p->ai_next)
+	{
 	
-		if((sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
-		{
+	  if((sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
+	  {
 			perror("Socket failed");
-		}
-
-/*		void *addr;
-		char ipstr[16];
-								// get the pointer to the address itself,
-								// different fields in IPv4 and IPv6:
-		if (res->ai_family == AF_INET) {
-			struct sockaddr_in *ipv4 = (struct sockaddr_in *)res->ai_addr;
-			addr = &(ipv4->sin_addr);
-		
-			inet_ntop(res->ai_family, addr, ipstr, sizeof ipstr);	// convert the IP to a string and print it:
-			printf("server ip = %s\n",ipstr);
-		}
-*/
-		if(bind(sockfd, res->ai_addr, res->ai_addrlen) < 0)
-		{
+	  }
+	
+	  if(bind(sockfd, res->ai_addr, res->ai_addrlen) < 0)
+	  {
 			perror("bind failed");
-		}	
-		break;
+	  }
+	
+	  break;
 	}
 	
 	if(p == NULL)
@@ -119,6 +171,14 @@ int main(int argc, char *argv[])
 	
 	freeaddrinfo(res);
 
+//int opt;
+//
+///// start daemon if -d given in argument
+//if((opt = getopt(argc, argv, "d")) == 'd')
+//{
+//	daemon(0, sockfd);
+//}
+
 
 	/// socket listen
 	if(listen(sockfd, BACKLOG) < 0)
@@ -127,7 +187,8 @@ int main(int argc, char *argv[])
 	  return -1;
 	}
   
-	int i = 0;
+//int i = 0;
+	pthread_t thread1, thread2; 
 
   while(operation_switch)
   {
@@ -149,50 +210,26 @@ int main(int argc, char *argv[])
 	inet_ntop(opp_addr.ss_family, get_in_addr((struct sockaddr *)&opp_addr),
                   s, sizeof s);
 	
-
-
-
-	time_t r_time;
-	struct tm *timeinfo;
-	char buf[30];
-
-	time(&r_time);
-
-
-	while(1)
-	{
-		  printf("index %d\n", i++);
-
-
-		/// LOG MSG TO SYSLOG: "Accepted connection from XXX"
-		syslog(LOG_INFO, "Accepted connection from %s\n", s);
-		
-		int k=0;
-		char rdBuff[80] = {'\0'};
-
-		k = rand()%70;
-		
-		timeinfo = localtime(&r_time);
-		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
-		
-		sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
-		printf("%d %s\n",k,rdBuff);
-		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
-		if( rc < 0){
-		  perror("Couldnt send sensor results to file\n");
-		}
+  
 	
-		usleep(5000);
+	/// create pthread and pass socket id, and global mutex in thread arguments
+	if((pthread_create(&thread1, NULL, &threadhandler1, NULL)) != 0)
+	{
+	  syslog(LOG_ERR, "pthread create failed.");
+	  return -1;
 	}
+	
+	/// create pthread and pass socket id, and global mutex in thread arguments
+	if((pthread_create(&thread2, NULL, &threadhandler2, NULL)) != 0)
+	{
+	  syslog(LOG_ERR, "pthread create failed.");
+	  return -1;
+	}	
+	
  }
+ 
+ pthread_join(thread1, NULL);
+ pthread_join(thread2, NULL);
 }
-
-
-/* int pseudo_sensor(){
-	delay(1000);
-	return (rand()%50);
-} */
-
-
-
   //shutdown(socket_client,SHUT_RDWR);
+  

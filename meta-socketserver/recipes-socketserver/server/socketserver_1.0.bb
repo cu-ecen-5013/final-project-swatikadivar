@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 SRC_URI = "git://github.com/cu-ecen-5013/final-project-swatikadivar.git;protocol=http"
 PV = "1.0+git${SRCPV}"
-SRCREV = "2109d79b00814b4a9adceeeaf94f6f5f619aca40"
+SRCREV = "e75d76e11be4bf9b99b7e0d40d202f13fb2b0b4a"
 
 #FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
