@@ -160,8 +160,8 @@ int main(int argc, char *argv[])
 		int k=0;
 		char rdBuff[20] = {'\0'};
 		k = rand()%70;
-		sprintf(rdBuff,"%s",k);
-		strcat(rdBuff,'\n');
+		sprintf(rdBuff,"%d\n",k);
+		printf("%d %s\n",k,rdBuff);
 		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
 		if( rc < 0){
 		  perror("Couldnt send sensor results to file\n");
