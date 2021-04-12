@@ -18,7 +18,7 @@ IMAGE="IMAGE_FSTYPES = \"tar.bz2 ext3 wic.bz2 wic.bmap rpi-sdimg\""
 #Set GPU memory as minimum
 MEMORY="GPU_MEM = \"16\""
 #Add any packages needed here
-ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"mosquitto mosquitto-clients python3-paho-mqtt libpng-dev libwebp-dev socketserver\""
+ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"mosquitto mosquitto-clients python3-paho-mqtt libpng-dev libwebp-dev socketserver gpio\""
 #Add wifi support
 DISTRO_F="DISTRO_FEATURES_append = \"wifi\""
 #add firmware support 
@@ -133,6 +133,9 @@ layer_networking_info=$?
 bitbake-layers show-layers | grep "meta-socketserver" > /dev/null
 layer_socketserver_info=$?
 
+bitbake-layers show-layers | grep "meta-gpio" > /dev/null
+layer_socketserver_info=$?
+
 if [ $layer_metaoe_info -ne 0 ];then
     echo "Adding meta-oe layer"
 	bitbake-layers add-layer ../meta-openembedded/meta-oe
@@ -169,6 +172,13 @@ if [ $layer_info -ne 0 ];then
 	bitbake-layers add-layer ../meta-socketserver
 else
 	echo "layer meta-socketserver already exists"
+fi
+
+if [ $layer_info -ne 0 ];then
+	echo "Adding meta-gpio layer"
+	bitbake-layers add-layer ../meta-gpio
+else
+	echo "layer meta-gpio already exists"
 fi
 
 
