@@ -43,6 +43,7 @@ do_install () {
 
 	install -d ${D}${bindir}
 	install -m 0755 ${S}/socketserver ${D}${bindir}/	
+	install -m 0755 ${S}/gpio ${D}${bindir}/
 #	install -d ${D}${sysconfdir}/init.d
 #	install -m 0755 ${S}/socketserver-start-stop ${D}${sysconfdir}/init.d
 }

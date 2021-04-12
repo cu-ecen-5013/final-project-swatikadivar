@@ -23,10 +23,13 @@ endif
 socketserver: socketserver.c
 	$(CC) $(CFLAGS) -o socketserver socketserver.c $(LDFLAGS)
 
-all: socketserver
+gpio: gpio.c
+	$(CC) $(CFLAGS) -o gpio gpio.c $(LDFLAGS)
+
+all: socketserver gpio
 
 .PHONY: all
 
 clean:
-	\rm socketserver
+	\rm socketserver gpio
 	$(RM) $(TARGET) 
