@@ -134,7 +134,7 @@ bitbake-layers show-layers | grep "meta-socketserver" > /dev/null
 layer_socketserver_info=$?
 
 bitbake-layers show-layers | grep "meta-gpio" > /dev/null
-layer_socketserver_info=$?
+layer_gpio_info=$?
 
 if [ $layer_metaoe_info -ne 0 ];then
     echo "Adding meta-oe layer"

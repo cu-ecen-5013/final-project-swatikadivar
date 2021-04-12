@@ -20,13 +20,14 @@ ifeq ($(LDFLAGS),)
 	LDFLAGS = -pthread -lrt
 endif
 
+all: socketserver gpio
+
 socketserver: socketserver.c
 	$(CC) $(CFLAGS) -o socketserver socketserver.c $(LDFLAGS)
 
 gpio: gpio.c
 	$(CC) $(CFLAGS) -o gpio gpio.c $(LDFLAGS)
 
-all: socketserver gpio
 
 .PHONY: all
 
