@@ -16,9 +16,9 @@ ifeq ($(CFLAGS),)
 	CFLAGS  = -g -Wall -Werror
 endif
 
-ifeq ($(LDFLAGS),)
-	LDFLAGS = -pthread -lrt
-endif
+#ifeq ($(LDFLAGS),)
+#	LDFLAGS = -pthread -lrt
+#endif
 
 all: socketserver gpio
 
