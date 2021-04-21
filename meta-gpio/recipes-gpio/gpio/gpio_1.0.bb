@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 SRC_URI = "git://github.com/cu-ecen-5013/final-project-swatikadivar.git;protocol=http"
 PV = "1.0+git${SRCPV}"
-SRCREV = "912e85779154928c33ec70948dd6996a671a221b"
+SRCREV = "590900f209fe18d460e955d3a281051087f6a2aa"
 
 #FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
 
@@ -18,7 +18,7 @@ S = "${WORKDIR}/git"
 
 FILES_${PN} += "${bindir}/gpio"
 # TODO: customize these as necessary for any libraries you need for your application
-#TARGET_LDFLAGS += "-pthread -lrt"
+TARGET_LDFLAGS += "-pthread -lrt"
 #inherit update-rc.d
 #INITSCRIPT_PACKAGES= "${PN}"
 #INITSCRIPT_NAME_${PN}="socketserver-start-stop"
