@@ -14,19 +14,16 @@ CONFLINE="MACHINE = \"raspberrypi3\""
 
 
 #Create image of the type rpi-sdimg
-IMAGE="IMAGE_FSTYPES = \"tar.bz2 ext3 wic.bz2 wic.bmap rpi-sdimg\""
+IMAGE="IMAGE_FSTYPES = \"wic.bz2\""
 #Set GPU memory as minimum
 MEMORY="GPU_MEM = \"16\""
 #Add any packages needed here
-ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"mosquitto mosquitto-clients python3-paho-mqtt libpng-dev libwebp-dev socketserver gpio\""
+ADD_PACK="CORE_IMAGE_EXTRA_INSTALL += \"socketserver gpio\""
 #Add wifi support
 DISTRO_F="DISTRO_FEATURES_append = \"wifi\""
 #add firmware support 
-IMAGE_ADD="IMAGE_INSTALL_append = \"linux-firmware-rpidistro-bcm43430 v4l-utils python3 python3-numpy gstreamer1.0-dev python3-matplotlib python3-configargparse python3-pip gcc python3-nose python3-pandas python3-sympy gstreamer1.0-plugins-base cmake ntp wpa-supplicant\""
-#linux-firmware-bcm43430
-#wpa-supplicant
-#kernel-module-brcmfmac bluez5 i2c-tools bridge-utils hostapd dhcp-server networkmanager iptables
-#add camera support
+IMAGE_ADD="IMAGE_INSTALL_append = \"linux-firmware-rpidistro-bcm43430 v4l-utils python3 ntp wpa-supplicant\""
+
 #Licence
 LICENCE="LICENSE_FLAGS_WHITELIST = \"commercial\""
 
