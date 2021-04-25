@@ -1,3 +1,7 @@
+/* SocketServer application for AESD final project. This file implements Socket Server code 
+ * which accepts connection from the client.
+ * Author: Disha Modi */
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -22,42 +26,40 @@
 #include<time.h>
 #include<stdbool.h>
 
-#define MAXRECVSTRING 30
-#define PORTNO 9000
 #define PORT "9000"
-
 #define BACKLOG 10
+
 int sockfd, newfd;
 char s[INET6_ADDRSTRLEN];
-int operation_switch =1;
+int signal_flag =1;
 pthread_mutex_t socklock;
 char rdBuff[80] = {'\0'};
 
 //Signal HAndler function
 void handle_sig(int sig)
 {
-  operation_switch=0;
+  signal_flag=0;
   if(sig == SIGINT)
     syslog(LOG_DEBUG,"Caught SIGINT Signal exiting\n");
   if(sig == SIGTERM)
-    syslog(LOG_DEBUG,"Caught SIGTERM Signal exiting\n");  
+    syslog(LOG_DEBUG,"Caught SIGTERM Signal exiting\n"); 
+
   shutdown(newfd,SHUT_RDWR);
+  shutdown(sockfd,SHUT_RDWR);
   _exit(0);
 }
 
+/// Thread parameter structure
 typedef struct
 {
     int threadIdx;
 } threadParams_t;
 
+/// Thread handler writes pseudo sensor 1 data to the socket
 void* threadhandler1(void* thread_param)
 {
-//	printf("entering thread handler 1\n");
-	while(operation_switch)
-	{
-		/// LOG MSG TO SYSLOG: "Accepted connection from XXX"
-		syslog(LOG_INFO, "Accepted connection from %s\n", s);
-		
+	while(signal_flag)
+	{	
 		int k=0, rc=0;
 
 		time_t r_time;
@@ -69,11 +71,19 @@ void* threadhandler1(void* thread_param)
 		
 		timeinfo = localtime(&r_time);
 		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
-	pthread_mutex_lock(&socklock);	
-		sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
-		//printf("%d %s\n",k,rdBuff);
+		
+	        pthread_mutex_lock(&socklock);	
+		if(k > 40)
+		{
+			sprintf(rdBuff, "%s !Alert S1: %d\n",buf, k);
+		}
+		else
+		{
+			sprintf(rdBuff, "%s sensor 1: %d\n",buf, k);
+		}
+
 		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
-	pthread_mutex_unlock(&socklock);
+	        pthread_mutex_unlock(&socklock);
 		if( rc < 0){
 		  perror("Couldnt send sensor results to file\n");
 		}
@@ -83,16 +93,17 @@ void* threadhandler1(void* thread_param)
 	pthread_exit((void *)0);
 }
 
+
+/// Thread handler writes pseudo sensor 1 data to the socket
 void* threadhandler2(void* thread_param)
 {
 //	printf("entering thread handler 2\n");
-	while(operation_switch){
-			/// LOG MSG TO SYSLOG: "Accepted connection from XXX"
+	while(signal_flag){
+			
 		syslog(LOG_INFO, "Accepted connection from %s\n", s);
 		
 		int k=0,rc=0;
 		
-
 		time_t r_time;
 		struct tm *timeinfo;
 		char buf[30];
@@ -103,11 +114,18 @@ void* threadhandler2(void* thread_param)
 		timeinfo = localtime(&r_time);
 		strftime(buf, 80,"%x-%H:%M %p ", timeinfo);
 		
-	pthread_mutex_lock(&socklock);	
-		sprintf(rdBuff, "%s sensor 2: %d\n",buf, k);
-		//printf("%d %s\n",k,rdBuff);
+        	pthread_mutex_lock(&socklock);
+		if(k > 40)
+		{
+			sprintf(rdBuff, "%s !Alert S2: %d\n",buf, k);
+		}
+		else
+		{	
+			sprintf(rdBuff, "%s sensor 2: %d\n",buf, k);
+		}
+		
 		rc = send(newfd, rdBuff, strlen(rdBuff), MSG_DONTWAIT);
-	pthread_mutex_unlock(&socklock);
+        	pthread_mutex_unlock(&socklock);
 		if( rc < 0){
 		  perror("Couldnt send sensor results to file\n");
 		}
@@ -128,7 +146,9 @@ void *get_in_addr(struct sockaddr *sa)
 
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);   // for IPv6
 }
-  
+
+/// Main function performs socket binding and calls thread handlers.
+// This function executes code until sigint or sigterm signal.
 int main(int argc, char *argv[])
 {
 	
@@ -186,21 +206,20 @@ int main(int argc, char *argv[])
 	  syslog(LOG_ERR, "Socket listen failed.");
 	  return -1;
 	}
-  
-//int i = 0;
+
 	pthread_t thread1, thread2; 
 
-  while(operation_switch)
+  while(signal_flag)
   {
 
-		socklen_t addr_size = sizeof(opp_addr);
+	socklen_t addr_size = sizeof(opp_addr);
 		
 		/// accept socket connection
 	newfd = accept(sockfd, (struct sockaddr *)&opp_addr, &addr_size);
 	if(newfd < 0)
 	{
-			syslog(LOG_ERR, "Socket accept failed.");
-		if(!operation_switch) 
+		syslog(LOG_ERR, "Socket accept failed.");
+		if(!signal_flag) 
 		{
 			break;
 		}
@@ -213,7 +232,7 @@ int main(int argc, char *argv[])
     threadParams[0].threadIdx = 1;
 	threadParams[1].threadIdx = 2;
 	
-	/// create pthread and pass socket id, and global mutex in thread arguments
+	/// create pthread and pass thread index
 	if((pthread_create(&thread1, NULL, &threadhandler1, (void *)&(threadParams[0]))) != 0)
 	{
 		printf("thread1 creation failed\n");
@@ -229,10 +248,11 @@ int main(int argc, char *argv[])
 	  return -1;
 	}	
 	
+	 pthread_join(thread1, NULL);
+	 pthread_join(thread2, NULL);	
  }
  
- pthread_join(thread1, NULL);
- pthread_join(thread2, NULL);
+ printf("Signal received, shutting down...\n");
 }
-  //shutdown(socket_client,SHUT_RDWR);
+
   
