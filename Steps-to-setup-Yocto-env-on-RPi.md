@@ -37,12 +37,16 @@ git submodule add https://git.openembedded.org/meta-openembedded meta-openembedd
 git submodule add git://git.yoctoproject.org/poky poky
 ````
 
-Edit build.sh to specify image type to be generated, packages to be added to an image, add required meta layers etc. This all specifications will be added to conf/layer.conf.
+Edit build.sh to specify image type to be generated, packages to be added to an image, add required meta layers etc. This all specifications will be added to conf/local.conf.
 
 ````
 ./build.sh
 ````
 
-build.sh execution will take several hours. Once execution completes without any issue, it will create an image at build/tmp/deploy/images/<machine_name>/<image_type_specified> depending on the type specified in build.sh file.
+build.sh execution will take several hours. This will execute below command internally after updating local.conf.
+````
+bitbake core-image-base
+````
+Once execution completes without any issue, it will create an image at build/tmp/deploy/images/<machine_name>/<image_type_specified> depending on the type specified in build.sh file.
 
 Flash this image on SD card and bring up RaspberryPi with the image flashed on SD card.
