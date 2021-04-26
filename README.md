@@ -15,7 +15,7 @@ Client-X code will be hosted in a repository at [Client-Repo](https://github.com
 ## Schedule Page
 [Schedule Page](https://github.com/cu-ecen-5013/final-project-swatikadivar/wiki/Schedule-Page)
 
-## Demo Page
+## Project Demo Page
 [Demo Page Link](https://github.com/cu-ecen-5013/final-project-swatikadivar/wiki/Swati's-Final-Project-Demo)
 
 =======
