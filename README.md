@@ -9,11 +9,15 @@ Yocto Repository will be hosted at [YoctoServer-Repo](https://github.com/cu-ecen
 
 Client-X code will be hosted in a repository at [Client-Repo](https://github.com/cu-ecen-5013/final-project-modi-disha)
 
-## Wiki Page
+## Project Overview Page
 [Project Overview](https://github.com/cu-ecen-5013/final-project-swatikadivar/wiki/Project-Overview)
 
 ## Schedule Page
 [Schedule Page](https://github.com/cu-ecen-5013/final-project-swatikadivar/wiki/Schedule-Page)
+
+## Demo Page
+[Demo Page Link](https://github.com/cu-ecen-5013/final-project-swatikadivar/wiki/Swati's-Final-Project-Demo)
+
 =======
 # yocto-assignments-base
 Base repository for AESD Yocto assignments
